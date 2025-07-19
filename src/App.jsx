@@ -1,73 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import KwikNote from "./components/KwikNote";
-import { supabase } from "./supabaseClient";
 
 function App() {
   const [notes, setNotes] = useState([]);
-
-  useEffect(() => {
-    fetchNotes();
-  }, []);
-
-  const fetchNotes = async () => {
-    try {
-      let { data, error } = await supabase.from("notes").select("*");
-      if (error) {
-        throw error;
-      }
-      setNotes(data || []);
-    } catch (error) {
-      console.error("Error fetching notes: ", error.message);
-    }
-  };
-  const addNote = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("notes")
-        .insert([{ text: "Click Edit to write your note..." }])
-        .select();
-
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      console.error("Error adding note: ", error.message);
-    }
+  const addNote = () => {
     setNotes([
       ...notes,
       { id: Date.now(), text: "Click Edit to write your note..." },
     ]);
   };
-  const updateNote = async (id, newText) => {
-    try {
-      
-const { data, error } = await supabase
-  .from('notes').update({text: newText }).eq('id', id).select()
-   setNotes((preNote) =>
+  const updateNote = (id, newText) => {
+    setNotes((preNote) =>
       preNote.map((note) =>
         note.id === id ? { ...note, text: newText } : note
-      ));        
-      if (error) {
-        throw error
-      }
-    } catch (error) {
-      console.error("Error updating note: ", error.message);
-    }
-   
-    
+      )
+    );
   };
-  const deleteNote = async (id) => {
-    try {
-      
-const { error } = await supabase.from('notes').delete().eq('id', id)
-setNotes(notes.filter((note) => note.id !== id));
-          if (error) {
-            throw error
-          }
-    } catch (error) {
-      console.error("Error deleting note: ", error.message);
-    }
-    
+  const deleteNote = (id) => {
+    setNotes(notes.filter((note) => note.id !== id));
   };
   return (
     <>
